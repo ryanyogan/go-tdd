@@ -19,3 +19,8 @@ func (i *InMemoryPlayerStore) RecordWin(name string) {
 func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
 	return i.store[name]
 }
+
+// GetLeague returns `[]Player` .. or simply put an array of objects in JSON
+func (i *InMemoryPlayerStore) GetLeague() []Player {
+	return nil
+}

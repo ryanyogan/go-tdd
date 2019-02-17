@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -9,6 +10,16 @@ import (
 type PlayerServer struct {
 	store PlayerStore
 	http.Handler
+}
+
+// Player defines the structure of a player with the following fields:
+//
+// - Name (string)
+//
+// - Wins (int)
+type Player struct {
+	Name string
+	Wins int
 }
 
 // NewPlayerServer returns a new instance of the PlayerServer
@@ -29,10 +40,12 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 type PlayerStore interface {
 	GetPlayerScore(name string) int
 	RecordWin(name string)
+	GetLeague() []Player
 }
 
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
+	w.Header().Set("content-type", "application/json")
+	json.NewEncoder(w).Encode(p.store.GetLeague())
 }
 
 func (p *PlayerServer) playersHandler(w http.ResponseWriter, r *http.Request) {
