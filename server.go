@@ -6,23 +6,26 @@ import (
 	"net/http"
 )
 
-// PlayerServer defines the structure of a server for players
+// PlayerStore stores score information about players
+type PlayerStore interface {
+	GetPlayerScore(name string) int
+	RecordWin(name string)
+	GetLeague() []Player
+}
+
+// PlayerServer is an HTTP interface for player information
 type PlayerServer struct {
 	store PlayerStore
 	http.Handler
 }
 
-// Player defines the structure of a player with the following fields:
-//
-// - Name (string)
-//
-// - Wins (int)
+// Player stores a name with a number of wins
 type Player struct {
 	Name string
 	Wins int
 }
 
-// NewPlayerServer returns a new instance of the PlayerServer
+// NewPlayerServer creates a PlaterServer with routing configured
 func NewPlayerServer(store PlayerStore) *PlayerServer {
 	p := new(PlayerServer)
 	p.store = store
@@ -34,13 +37,6 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 	p.Handler = router
 
 	return p
-}
-
-// PlayerStore holds the players state
-type PlayerStore interface {
-	GetPlayerScore(name string) int
-	RecordWin(name string)
-	GetLeague() []Player
 }
 
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
